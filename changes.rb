@@ -34,6 +34,7 @@ PullRequestsOnRepositoryQuery = GitHub::Client.parse <<-'GRAPHQL'
           title
           issues(first:100) {
             nodes {
+              closed
               title
               url
               labels(first: 100) {
@@ -45,6 +46,7 @@ PullRequestsOnRepositoryQuery = GitHub::Client.parse <<-'GRAPHQL'
           }
           pullRequests(first: 100) {
             nodes {
+              closed
               title
               url
               labels(first: 100) {
@@ -105,6 +107,8 @@ changes = {
 }
 
 milestone.issues.nodes.each do |pull_request|
+  next unless pull_request.closed
+
   labels = pull_request.labels.nodes.map(&:name)
   if labels.include?("security")
     changes[:security] << pull_request
@@ -116,6 +120,8 @@ milestone.issues.nodes.each do |pull_request|
 end
 
 milestone.pull_requests.nodes.each do |pull_request|
+  next unless pull_request.closed
+
   labels = pull_request.labels.nodes.map(&:name)
   if labels.include?("security")
     changes[:security] << pull_request
