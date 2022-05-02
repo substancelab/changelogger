@@ -132,9 +132,18 @@ milestone.pull_requests.nodes.each do |pull_request|
   end
 end
 
-[:regular, :security, :dependencies].each do |category|
+[:regular, :security].each do |category|
   changes[category].sort_by(&:title).each do |pull_request|
     puts "* #{pull_request.title}: #{pull_request.url}"
     puts
   end
 end
+
+bumped_dependencies = changes[:dependencies].
+  map(&:title).
+  map { |title|
+    title.match(/Bump (.*?) from/)[1]
+  }.
+  sort.
+  uniq
+puts "* Bumped #{bumped_dependencies.join(', ')}."
