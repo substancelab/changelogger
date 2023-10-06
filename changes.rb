@@ -141,8 +141,14 @@ end
 
 bumped_dependencies = changes[:dependencies].
   map(&:title).
-  map { |title|
-    title.match(/Bump (.*?) from/)[1]
+  flat_map { |title|
+    singular_bump = title.scan(/Bump (.*?) from/)
+    multiple_bump = title.scan(/(?:,|\s)(.+?)(?:,|\s|\z)/)
+    if singular_bump.any?
+      singular_bump.flatten
+    elsif multiple_bump.any?
+      multiple_bump.flatten
+    end
   }.
   sort.
   uniq
